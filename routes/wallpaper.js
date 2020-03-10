@@ -5,8 +5,8 @@ const bingAPI = `https://cn.bing.com/HPImageArchive.aspx`
 
 const handler = async (req, res, next) => {
   const {
-    hd = 0,
-      idx = 0,
+    hd = 0, // High Definition 高清晰度，决定相同分辨率下图片压缩程度 0: 标清, 1: 高清
+      idx = 0, // 0: today, 1: yesterday, 2: 2 days before, 3: 3 days before, etc.
       n = 1,
       nc = new Date().getTime()
   } = req.query
@@ -15,10 +15,10 @@ const handler = async (req, res, next) => {
     const response = await axios.get(bingAPI, {
       params: {
         format: 'hp',
-        uhd: hd, // High Definition 高清晰度，决定相同分辨率下图片压缩程度 0: 标清, 1: 高清
+        uhd: hd,
         uhdwidth: 1920,
         uhdheight: 1080,
-        idx, // 0: today, 1: yesterday, 2: 2 days before, 3: 3 days before, etc.
+        idx,
         n, // Unknown param
         nc, // Timestamp
       }
