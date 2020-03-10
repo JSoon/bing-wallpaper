@@ -20,4 +20,4 @@ EXPOSE 5000
 # RUN npm run prod
 
 # Run the specified command within the container.
-CMD [ "node", "app.js" ]
+CMD [ "node", "bin/www" ]
