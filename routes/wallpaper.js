@@ -7,7 +7,8 @@ const handler = async (req, res, next) => {
   const {
     hd = 0,
       idx = 0,
-      n = 1
+      n = 1,
+      nc = new Date().getTime()
   } = req.query
 
   try {
@@ -19,7 +20,7 @@ const handler = async (req, res, next) => {
         uhdheight: 1080,
         idx, // 0: today, 1: yesterday, 2: 2 days before, 3: 3 days before, etc.
         n, // Unknown param
-        nc: new Date().getTime() // Timestamp
+        nc, // Timestamp
       }
     })
 
