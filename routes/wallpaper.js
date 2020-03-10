@@ -15,7 +15,7 @@ const handler = async (req, res, next) => {
     const response = await axios.get(bingAPI, {
       params: {
         format: 'hp',
-        uhd: hd, // High Definition 高清晰度，决定相同分辨率下图片压缩程度
+        uhd: hd, // High Definition 高清晰度，决定相同分辨率下图片压缩程度 0: 标清, 1: 高清
         uhdwidth: 1920,
         uhdheight: 1080,
         idx, // 0: today, 1: yesterday, 2: 2 days before, 3: 3 days before, etc.
