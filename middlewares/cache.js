@@ -1,3 +1,11 @@
+/**
+ * @description Simple cache middelware
+ * 
+ * https://expressjs.com/en/guide/writing-middleware.html
+ * https://expressjs.com/en/guide/using-middleware.html
+ * https://medium.com/the-node-js-collection/simple-server-side-cache-for-express-js-with-node-js-45ff296ca0f0
+ */
+
 const mcache = require('memory-cache')
 
 const cache = duration => {
