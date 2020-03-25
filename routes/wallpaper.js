@@ -1,4 +1,6 @@
 // Bing wallpaper
+const fs = require('fs')
+const path = require('path')
 const axios = require('axios')
 const bingURL = `https://cn.bing.com`
 const bingAPI = `https://cn.bing.com/HPImageArchive.aspx`
@@ -27,6 +29,8 @@ const handler = async (req, res, next) => {
     const data = parse2JSON(response.data)
 
     res.json(data)
+
+    saveToLocal(data)
   } catch (error) {
     console.error(error)
   }
@@ -55,6 +59,41 @@ function parse2JSON(data) {
   } else {
     return {}
   }
+}
+
+async function saveToLocal(response) {
+  const {
+    url,
+    startdate,
+    enddate,
+    copyright
+  } = response
+  
+  const file = path.resolve(__dirname, `../../bing-wallpaper-images/${enddate}_${copyright.replace(/\/|\\/g, ', ')}.jpg`)
+
+  fs.access(file, fs.constants.F_OK, async (err) => {
+
+    if (err) {
+      console.log('no file exists!')
+
+      const writer = fs.createWriteStream(file)
+
+      const response = await axios({
+        url,
+        method: 'GET',
+        responseType: 'stream'
+      })
+
+      response.data.pipe(writer)
+    }
+
+  })
+
+
+  // return new Promise((resolve, reject) => {
+  //   writer.on('finish', resolve)
+  //   writer.on('error', reject)
+  // })
 }
 
 module.exports = handler

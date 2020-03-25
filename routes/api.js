@@ -5,6 +5,7 @@ const cache = require('../middlewares/cache')
 const wallpaper = require('./wallpaper')
 
 // Bing wallpaper
-router.get('/wallpaper', cache(10), wallpaper)
+const cacheTime = 60 * 60
+router.get('/wallpaper', cache(cacheTime), wallpaper)
 
 module.exports = router
