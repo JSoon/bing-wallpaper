@@ -69,7 +69,7 @@ async function saveToLocal(response) {
     copyright
   } = response
   
-  const file = path.resolve(__dirname, `../../bing-wallpaper-images/${enddate}_${copyright.replace(/\/|\\/g, ', ')}.jpg`)
+  const file = path.resolve(process.cwd(), `wallpapers/${enddate}_${copyright.replace(/\/|\\/g, ', ')}.jpg`)
 
   fs.access(file, fs.constants.F_OK, async (err) => {
 
