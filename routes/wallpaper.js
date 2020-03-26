@@ -6,34 +6,17 @@ const bingURL = `https://cn.bing.com`
 const bingAPI = `https://cn.bing.com/HPImageArchive.aspx`
 
 const handler = async (req, res, next) => {
-  const {
-    hd = 0, // High Definition 高清晰度，决定相同分辨率下图片压缩程度 0: 标清, 1: 高清
-      idx = 0, // 0: today, 1: yesterday, 2: 2 days before, 3: 3 days before, etc.
-      n = 1,
-      nc = new Date().getTime()
-  } = req.query
 
   try {
-    const response = await axios.get(bingAPI, {
-      params: {
-        format: 'hp',
-        uhd: hd,
-        uhdwidth: 1920,
-        uhdheight: 1080,
-        idx,
-        n, // Unknown param
-        nc, // Timestamp
-      }
-    })
+    const response = await getWallpaper(req.query)
 
     const data = parse2JSON(response.data)
 
     res.json(data)
-
-    saveToLocal(data)
   } catch (error) {
     console.error(error)
   }
+
 }
 
 function parse2JSON(data) {
@@ -61,39 +44,84 @@ function parse2JSON(data) {
   }
 }
 
-async function saveToLocal(response) {
+function getWallpaper(query) {
+
   const {
-    url,
-    startdate,
-    enddate,
-    copyright
-  } = response
-  
-  const file = path.resolve(process.cwd(), `wallpapers/${enddate}_${copyright.replace(/\/|\\/g, ', ')}.jpg`)
+    hd = 0, // High Definition 高清晰度，决定相同分辨率下图片压缩程度 0: 标清, 1: 高清
+      idx = 0, // 0: today, 1: yesterday, 2: 2 days before, 3: 3 days before, etc.
+      n = 1,
+      nc = new Date().getTime()
+  } = query
 
-  fs.access(file, fs.constants.F_OK, async (err) => {
-
-    if (err) {
-      console.log('no file exists!')
-
-      const writer = fs.createWriteStream(file)
-
-      const response = await axios({
-        url,
-        method: 'GET',
-        responseType: 'stream'
-      })
-
-      response.data.pipe(writer)
+  return axios.get(bingAPI, {
+    params: {
+      format: 'hp',
+      uhd: hd,
+      uhdwidth: 1920,
+      uhdheight: 1080,
+      idx,
+      n, // Unknown param
+      nc, // Timestamp
     }
-
   })
-
-
-  // return new Promise((resolve, reject) => {
-  //   writer.on('finish', resolve)
-  //   writer.on('error', reject)
-  // })
 }
+
+async function saveToLocal(query) {
+
+  try {
+    const response = await getWallpaper(query)
+    const data = parse2JSON(response.data)
+
+    const {
+      url,
+      startdate,
+      enddate,
+      copyright
+    } = data
+
+    const file = path.resolve(process.cwd(), `wallpapers/${enddate}_${copyright.replace(/\/|\\/g, ', ')}.jpg`)
+
+    fs.access(file, fs.constants.F_OK, async (err) => {
+
+      if (err) {
+        console.log('no file exists!')
+
+        const writer = fs.createWriteStream(file)
+
+        const response = await axios({
+          url,
+          method: 'GET',
+          responseType: 'stream'
+        })
+
+        response.data.pipe(writer)
+      }
+
+    })
+
+    // return new Promise((resolve, reject) => {
+    //   writer.on('finish', resolve)
+    //   writer.on('error', reject)
+    // })
+
+  } catch (error) {
+    console.error(error)
+  }
+
+}
+
+// 定时任务每天00:00:00保存今日图片
+const today = new Date()
+const tomorrow = new Date(today)
+tomorrow.setDate(tomorrow.getDate() + 1)
+const midnight = tomorrow.setHours(0, 0, 0, 0)
+const tolerance = 5000 // 误差5秒
+const interval = midnight - new Date() + tolerance
+console.log(`Saving daily wallpaper after ${interval / 3600 / 1000} hours`)
+setInterval(() => {
+  saveToLocal({
+    hd: 1
+  })
+}, interval)
 
 module.exports = handler
