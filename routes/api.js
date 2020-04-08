@@ -7,5 +7,6 @@ const wallpaper = require('./wallpaper')
 // Bing wallpaper
 const cacheTime = 60 * 60
 router.get('/wallpaper', cache(cacheTime), wallpaper)
+// router.get('/wallpaper', wallpaper)
 
 module.exports = router
