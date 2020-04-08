@@ -9,7 +9,7 @@ const apiRouter = require('./routes/api');
 const app = express();
 
 app.use(cors());
-app.use(logger(':method :url :status :response-time ms | :res[content-length] | :req["X-Forwarded-For"]'));
+app.use(logger(':method :url :status :response-time ms | :res[content-length] | :req[X-Forwarded-For]'));
 app.use(express.json());
 app.use(express.urlencoded({
   extended: false

@@ -10,18 +10,24 @@ const mcache = require('memory-cache')
 
 const cache = duration => {
   return (req, res, next) => {
-    const key = `__express__${req.originalUrl || req.url}`
+    const forwardedIP = req.headers['X-Forwarded-For'] || 'localhost'
+    const userIP = forwardedIP.split(',')[0]
+    const key = `__express__${req.originalUrl || req.url}_${userIP}`
     const cachedBody = mcache.get(key)
 
     if (cachedBody) {
-      res.header('__express__cache', 'hit')
+      res
+        .header('__express__cache', 'hit')
+        .header('X-Forwarded-For', forwardedIP)
       res.send(cachedBody)
       return
     } else {
       res.sendResponse = res.send
       res.send = body => {
         mcache.put(key, body, duration * 1000)
-        res.header('__express__cache', 'fresh')
+        res
+          .header('__express__cache', 'fresh')
+          .header('X-Forwarded-For', forwardedIP)
         res.sendResponse(body)
       }
       next()

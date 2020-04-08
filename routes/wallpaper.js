@@ -83,6 +83,7 @@ function getWallpaper(query) {
 
 function getUserRegion(req) {
   const forwardedIP = req.headers['X-Forwarded-For']
+  console.log('Request Headers:', req.headers)
 
   if (forwardedIP) {
     const ip = forwardedIP.split(',')[0]
