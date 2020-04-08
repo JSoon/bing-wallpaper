@@ -10,7 +10,7 @@ const mcache = require('memory-cache')
 
 const cache = duration => {
   return (req, res, next) => {
-    const forwardedIP = req.headers['X-Forwarded-For'] || 'localhost'
+    const forwardedIP = req.headers['X-Forwarded-For'.toLowerCase()] || 'localhost'
     const userIP = forwardedIP.split(',')[0]
     const key = `__express__${req.originalUrl || req.url}_${userIP}`
     const cachedBody = mcache.get(key)
