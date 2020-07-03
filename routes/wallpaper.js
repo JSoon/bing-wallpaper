@@ -116,6 +116,8 @@ async function saveToLocal(query) {
 
     const file = path.resolve(process.cwd(), `wallpapers/${enddate}_${copyright.replace(/\/|\\|\s/g, '_')}.jpg`)
 
+    console.log('file path:', file);
+
     fs.access(file, fs.constants.F_OK, async (err) => {
 
       try {
